@@ -1,0 +1,15 @@
+---
+
+  - name: database dump 
+    shell: "PGPASSWORD={{ pgsql_user_connection.password }} pg_dump -h {{ pgsql_user_connection.host }} -U {{ pgsql_user_connection.user }} -Fc -Z9 -f /tmp/{{ item }}.{{ timestamp }}.backup {{ item }}"
+    with_items: psql_dump_databases
+
+  - name: get compressed database 
+    fetch: 
+      mode=pull
+      src="/tmp/{{ item }}.{{ timestamp }}.backup"
+      dest="{{ psql_dump_directory }}/{{ item }}.{{ timestamp }}.backup"
+      flat=yes
+    with_items: psql_dump_databases
+
+  - debug: msg="backup saved to {{ psql_dump_directory }}"

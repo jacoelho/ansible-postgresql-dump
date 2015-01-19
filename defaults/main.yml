@@ -1,0 +1,19 @@
+---
+
+timestamp: "{{ ansible_date_time.date }}"
+
+psql_dump_directory: "/tmp/training/{{ timestamp }}"
+
+#psql_dump_databases:
+#  - "sample1"
+#  - "sample2"
+
+
+#psql_restore_databases:
+#  sample1: target1
+#  sample2: target2
+
+pgsql_user_connection:
+  user: postgres
+  password: "cenas"
+  host: "localhost"

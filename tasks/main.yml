@@ -1,0 +1,11 @@
+---
+
+  - include: dump.yml
+    when: psql_dump_databases is defined
+    tags: 
+      - dump
+
+  - include: restore.yml
+    when: psql_restore_databases is defined
+    tags:
+      - restore

@@ -1,0 +1,20 @@
+---
+
+  - name: upload databases
+    copy: >
+      src="{{ psql_dump_directory }}/{{ item.key }}.{{ timestamp }}.backup"
+      dest="/tmp/{{ item.key }}.{{ timestamp }}.backup"
+    with_dict: psql_restore_databases
+
+
+  - name: drop database
+    shell: "PGPASSWORD={{ pgsql_user_connection.password }} dropdb -h {{ pgsql_user_connection.host }} -U {{ pgsql_user_connection.user }} --if-exists {{ item.value }}"
+    with_dict: psql_restore_databases
+
+  - name: create database
+    shell: "PGPASSWORD={{ pgsql_user_connection.password }} createdb -h {{ pgsql_user_connection.host }} -U {{ pgsql_user_connection.user }} -T template1 {{ item.value }}"
+    with_dict: psql_restore_databases
+    
+  - name: import databases
+    shell: "PGPASSWORD={{ pgsql_user_connection.password }} pg_restore -h {{ pgsql_user_connection.host }} -U {{ pgsql_user_connection.user }} -Fc -j{{ ansible_processor_count }} -d {{ item.value }} /tmp/{{ item.key }}.{{ timestamp }}.backup"
+    with_dict: psql_restore_databases
